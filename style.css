@@ -1,0 +1,83 @@
+/* Reset dasar */
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  background-color: #f9fafb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card Login */
+.login-card {
+  background: #fff;
+  width: 320px;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.login-card h2 {
+  margin-bottom: 8px;
+  color: #111;
+}
+
+.note {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 25px;
+}
+
+/* Input dan Label */
+label {
+  display: block;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #111;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #f8faff;
+}
+
+input:focus {
+  outline: none;
+  border-color: #111;
+}
+
+/* Tombol */
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #333;
+}
+
+/* Pesan */
+#message {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #444;
+}
