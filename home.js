@@ -27,6 +27,10 @@ const tags = document.querySelectorAll('.tag');
 const cuisineDropdown = document.querySelector('#cuisine-filter');
 const servingsDropdown = document.querySelector('#servings-filter');
 
+// State for combined filtering (Featured section)
+let currentCuisineFilter = 'all';
+let currentServingsFilter = 'all';
+
 document.addEventListener('DOMContentLoaded', () => {
   if (!checkAuthentication()) {
     return;
@@ -57,6 +61,10 @@ function initializeUserWelcome() {
     const heroTitle = document.querySelector('.hero-title');
     if (heroTitle) {
       heroTitle.textContent = `Welcome back, ${firstName}! Discover Delicious Recipes`;
+    }
+    const profileInfoName = document.getElementById('profile-info-name');
+    if (profileInfoName) {
+      profileInfoName.textContent = firstName;
     }
   }
 }
@@ -249,12 +257,61 @@ function initializeAnimations() {
 }
 
 function setupEventListeners() {
-  // Logout button event listener
+  // Logout button inside dropdown
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', (e) => {
       e.preventDefault();
       handleLogout();
+    });
+  }
+
+  // Profile dropdown interactions
+  const profileTrigger = document.getElementById('profile-trigger');
+  const profileDropdown = document.getElementById('profile-dropdown');
+  const profileWrapper = profileTrigger ? profileTrigger.closest('.profile-wrapper') : null;
+  if (profileTrigger && profileDropdown && profileWrapper) {
+    const toggleDropdown = (show) => {
+      if (show) {
+        profileDropdown.classList.add('show');
+        profileTrigger.setAttribute('aria-expanded', 'true');
+        profileDropdown.setAttribute('aria-hidden', 'false');
+      } else {
+        profileDropdown.classList.remove('show');
+        profileTrigger.setAttribute('aria-expanded', 'false');
+        profileDropdown.setAttribute('aria-hidden', 'true');
+      }
+    };
+    let dropdownPinned = false; // stays open after click
+
+    // Hover only opens (doesn't pin)
+    profileWrapper.addEventListener('mouseenter', () => {
+      if (!dropdownPinned) toggleDropdown(true);
+    });
+    profileWrapper.addEventListener('mouseleave', () => {
+      if (!dropdownPinned) toggleDropdown(false);
+    });
+
+    // Click toggles and pins
+    profileTrigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      const open = profileDropdown.classList.contains('show');
+      if (open && dropdownPinned) {
+        // unpin & close
+        dropdownPinned = false;
+        toggleDropdown(false);
+      } else {
+        dropdownPinned = true;
+        toggleDropdown(true);
+      }
+    });
+
+    // Click outside closes & unpins
+    document.addEventListener('click', (e) => {
+      if (!profileWrapper.contains(e.target)) {
+        dropdownPinned = false;
+        toggleDropdown(false);
+      }
     });
   }
 
@@ -393,14 +450,21 @@ function loadAllRecipes() {
   
   const allCuisineDropdown = document.querySelector('#all-cuisine-filter');
   const allServingsDropdown = document.querySelector('#all-servings-filter');
+  // Initialize state if first time
+  if (typeof window.allCurrentCuisineFilter === 'undefined') {
+    window.allCurrentCuisineFilter = 'all';
+    window.allCurrentServingsFilter = 'all';
+  }
   if (allCuisineDropdown) {
     allCuisineDropdown.addEventListener('change', (e) => {
-      handleAllRecipesCuisineFilter(e.target.value);
+      window.allCurrentCuisineFilter = e.target.value;
+      applyAllRecipesFilters();
     });
   }
   if (allServingsDropdown) {
     allServingsDropdown.addEventListener('change', (e) => {
-      handleAllRecipesServingsFilter(e.target.value);
+      window.allCurrentServingsFilter = e.target.value;
+      applyAllRecipesFilters();
     });
   }
 }
@@ -479,6 +543,49 @@ function handleAllRecipesServingsFilter(rangeValue) {
   }, 100);
 
   showNotification(`Found ${filtered.length} recipes for servings ${rangeValue}`, 'success');
+}
+
+// Combined filtering for All Recipes
+function applyAllRecipesFilters() {
+  const cuisineVal = window.allCurrentCuisineFilter || 'all';
+  const servingsVal = window.allCurrentServingsFilter || 'all';
+  let filtered = allRecipes;
+
+  if (cuisineVal !== 'all') {
+    filtered = filtered.filter(r => r.cuisine === cuisineVal);
+  }
+  if (servingsVal !== 'all') {
+    filtered = filtered.filter(r => {
+      const s = r.servings;
+      if (servingsVal === '1-2') return s >= 1 && s <= 2; 
+      if (servingsVal === '3-4') return s >= 3 && s <= 4; 
+      if (servingsVal === '5-6') return s >= 5 && s <= 6; 
+      if (servingsVal === '7+') return s >= 7; 
+      return true;
+    });
+  }
+
+  const allRecipesGrid = document.querySelector('.all-recipes-grid');
+  const totalRecipesCount = document.querySelector('.total-recipes-count');
+  if (!allRecipesGrid) return;
+  if (totalRecipesCount) totalRecipesCount.textContent = `${filtered.length} recipes`;
+
+  allRecipesGrid.innerHTML = '';
+  filtered.forEach(r => allRecipesGrid.appendChild(createRecipeCard(r)));
+
+  setTimeout(() => {
+    const newRecipeCards = allRecipesGrid.querySelectorAll('.recipe-card');
+    const newFavoriteButtons = allRecipesGrid.querySelectorAll('.btn-favorite');
+    setupRecipeListenersForGrid(newRecipeCards, newFavoriteButtons);
+    updateFavoriteButtons();
+    initializeAnimations();
+  }, 100);
+
+  let parts = [];
+  if (cuisineVal !== 'all') parts.push(cuisineVal);
+  if (servingsVal !== 'all') parts.push(`servings ${servingsVal}`);
+  const label = parts.length ? parts.join(' • ') : 'all';
+  showNotification(`Found ${filtered.length} recipes (${label})`, 'success');
 }
 
 function setupRecipeListenersForGrid(recipeCards, favoriteButtons) {
@@ -672,54 +779,41 @@ function setupRecipeListenersForGrid(recipeCards, favoriteButtons) {
 }
 
 function handleCuisineFilter(cuisineValue) {
-  console.log('Cuisine filter:', cuisineValue);
-  
-  let filteredRecipes = [];
-  
-  if (cuisineValue === 'all') {
-    filteredRecipes = allRecipes;
-    showNotification('Showing all recipes', 'info');
-  } else {
-    filteredRecipes = allRecipes.filter(recipe => 
-      recipe.cuisine === cuisineValue
-    );
-    showNotification(`Showing ${cuisineValue} recipes`, 'info');
-  }
-  
-  displayedRecipes = filteredRecipes;
-  renderRecipes(displayedRecipes);
-  
-  const recipesSection = document.querySelector('.featured-section');
-  recipesSection.scrollIntoView({ behavior: 'smooth' });
-  
-  setTimeout(() => {
-    recipeCards = document.querySelectorAll('.recipe-card');
-    favoriteButtons = document.querySelectorAll('.btn-favorite');
-    setupRecipeListeners();
-    loadFavorites();
-    initializeAnimations();
-  }, 100);
-  
-  showNotification(`Found ${filteredRecipes.length} ${cuisineValue === 'all' ? '' : cuisineValue} recipes`, 'success');
+  currentCuisineFilter = cuisineValue;
+  applyFeaturedFilters();
 }
 
 function handleServingsFilter(rangeValue) {
-  let filtered = [];
-  if (rangeValue === 'all') {
-    filtered = allRecipes;
-  } else {
-    filtered = allRecipes.filter(r => {
+  currentServingsFilter = rangeValue;
+  applyFeaturedFilters();
+}
+
+function applyFeaturedFilters() {
+  let filtered = allRecipes;
+
+  // Cuisine filter
+  if (currentCuisineFilter !== 'all') {
+    filtered = filtered.filter(r => r.cuisine === currentCuisineFilter);
+  }
+
+  // Servings filter
+  if (currentServingsFilter !== 'all') {
+    filtered = filtered.filter(r => {
       const s = r.servings;
-      if (rangeValue === '1-2') return s >= 1 && s <= 2;
-      if (rangeValue === '3-4') return s >= 3 && s <= 4;
-      if (rangeValue === '5-6') return s >= 5 && s <= 6;
-      if (rangeValue === '7+') return s >= 7;
+      if (currentServingsFilter === '1-2') return s >= 1 && s <= 2;
+      if (currentServingsFilter === '3-4') return s >= 3 && s <= 4;
+      if (currentServingsFilter === '5-6') return s >= 5 && s <= 6;
+      if (currentServingsFilter === '7+') return s >= 7;
+      return true;
     });
   }
+
   displayedRecipes = filtered;
   renderRecipes(displayedRecipes);
   const recipesSection = document.querySelector('.featured-section');
-  recipesSection.scrollIntoView({ behavior: 'smooth' });
+  if (recipesSection) {
+    recipesSection.scrollIntoView({ behavior: 'smooth' });
+  }
   setTimeout(() => {
     recipeCards = document.querySelectorAll('.recipe-card');
     favoriteButtons = document.querySelectorAll('.btn-favorite');
@@ -727,7 +821,13 @@ function handleServingsFilter(rangeValue) {
     loadFavorites();
     initializeAnimations();
   }, 100);
-  showNotification(`Found ${filtered.length} recipes for servings ${rangeValue}`, 'success');
+
+  // Build notification message
+  let noteParts = [];
+  if (currentCuisineFilter !== 'all') noteParts.push(currentCuisineFilter);
+  if (currentServingsFilter !== 'all') noteParts.push(`servings ${currentServingsFilter}`);
+  const note = noteParts.length ? noteParts.join(' • ') : 'all';
+  showNotification(`Found ${filtered.length} recipes (${note})`, 'success');
 }
 
    // Modal utilities for Full Recipe (lazy-loaded from card.html)
@@ -892,6 +992,11 @@ function loadFavorites() {
       heartPath.setAttribute('stroke', '#FF6B6B');
     }
   });
+}
+
+// Ensure favorite heart states reflect localStorage for dynamically rendered cards
+function updateFavoriteButtons() {
+  loadFavorites();
 }
 
 function showNotification(message, type = 'info') {
