@@ -132,23 +132,27 @@ body {
 }
 
 .btn-logout {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-light);
-  display: flex;
+  background: var(--bg-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-dark);
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
+  gap: 8px;
   height: 40px;
-  border-radius: 50%;
+  padding: 0 14px;
+  border-radius: 999px;
+  cursor: pointer;
   transition: var(--transition);
 }
 
 .btn-logout:hover {
-  background: var(--bg-light);
+  background: #fff;
+  border-color: var(--primary-color);
   color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
 }
+
+.btn-logout-text { font-weight: 600; font-size: 14px; }
 
 .btn-profile {
   background: none;
@@ -648,6 +652,25 @@ body {
 
 .meta-item svg {
   color: var(--text-light);
+}
+
+/* Card actions */
+.recipe-actions { margin-top: 14px; display: flex; justify-content: flex-end; }
+.btn-view-full {
+  background: var(--bg-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-dark);
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-view-full:hover {
+  background: #fff;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
 }
 
 /* All Recipes Section */

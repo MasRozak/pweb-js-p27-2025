@@ -25,6 +25,7 @@ let recipeCards = document.querySelectorAll('.recipe-card');
 let favoriteButtons = document.querySelectorAll('.btn-favorite');
 const tags = document.querySelectorAll('.tag');
 const cuisineDropdown = document.querySelector('#cuisine-filter');
+const servingsDropdown = document.querySelector('#servings-filter');
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!checkAuthentication()) {
@@ -175,6 +176,9 @@ function createRecipeCard(recipe, index) {
           ${recipe.servings} servings
         </span>
       </div>
+      <div class="recipe-actions">
+        <button type="button" class="btn-view-full">View Full Recipe</button>
+      </div>
     </div>
   `;
   
@@ -281,6 +285,11 @@ function setupEventListeners() {
       handleCuisineFilter(e.target.value);
     });
   }
+  if (servingsDropdown) {
+    servingsDropdown.addEventListener('change', (e) => {
+      handleServingsFilter(e.target.value);
+    });
+  }
 
   document.querySelectorAll('.view-all').forEach(button => {
     button.addEventListener('click', (e) => {
@@ -383,9 +392,15 @@ function loadAllRecipes() {
   }, 100);
   
   const allCuisineDropdown = document.querySelector('#all-cuisine-filter');
+  const allServingsDropdown = document.querySelector('#all-servings-filter');
   if (allCuisineDropdown) {
     allCuisineDropdown.addEventListener('change', (e) => {
       handleAllRecipesCuisineFilter(e.target.value);
+    });
+  }
+  if (allServingsDropdown) {
+    allServingsDropdown.addEventListener('change', (e) => {
+      handleAllRecipesServingsFilter(e.target.value);
     });
   }
 }
@@ -424,6 +439,46 @@ function handleAllRecipesCuisineFilter(cuisineValue) {
   }, 100);
   
   showNotification(`Found ${filteredRecipes.length} ${cuisineValue === 'all' ? '' : cuisineValue} recipes`, 'success');
+}
+
+function handleAllRecipesServingsFilter(rangeValue) {
+  const allRecipesGrid = document.querySelector('.all-recipes-grid');
+  const totalRecipesCount = document.querySelector('.total-recipes-count');
+  if (!allRecipesGrid) return;
+
+  let filtered = [];
+  if (rangeValue === 'all') {
+    filtered = allRecipes;
+  } else {
+    filtered = allRecipes.filter(r => {
+      const s = r.servings;
+      if (rangeValue === '1-2') return s >= 1 && s <= 2;
+      if (rangeValue === '3-4') return s >= 3 && s <= 4;
+      if (rangeValue === '5-6') return s >= 5 && s <= 6;
+      if (rangeValue === '7+') return s >= 7;
+    });
+  }
+
+  if (totalRecipesCount) {
+    totalRecipesCount.textContent = `${filtered.length} recipes`;
+  }
+
+  allRecipesGrid.innerHTML = '';
+  filtered.forEach(recipe => {
+    const recipeCard = createRecipeCard(recipe);
+    allRecipesGrid.appendChild(recipeCard);
+  });
+
+  setTimeout(() => {
+    const newRecipeCards = allRecipesGrid.querySelectorAll('.recipe-card');
+    const newFavoriteButtons = allRecipesGrid.querySelectorAll('.btn-favorite');
+    
+    setupRecipeListenersForGrid(newRecipeCards, newFavoriteButtons);
+    updateFavoriteButtons();
+    initializeAnimations();
+  }, 100);
+
+  showNotification(`Found ${filtered.length} recipes for servings ${rangeValue}`, 'success');
 }
 
 function setupRecipeListenersForGrid(recipeCards, favoriteButtons) {
@@ -511,13 +566,25 @@ function setupRecipeListenersForGrid(recipeCards, favoriteButtons) {
    recipeCards.forEach(card => {
     card.addEventListener('click', (e) => {
        if (e.target.closest('.btn-favorite')) return;
-      
+       if (e.target.closest('.btn-view-full')) return; // separate handler below
       const recipeId = card.dataset.recipeId;
       const recipe = allRecipes.find(r => r.id == recipeId);
       if (recipe) {
         handleRecipeClick(recipe);
       }
     });
+
+    const viewBtn = card.querySelector('.btn-view-full');
+    if (viewBtn) {
+      viewBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const recipeId = card.dataset.recipeId;
+        const recipe = allRecipes.find(r => r.id == recipeId);
+        if (recipe) {
+          handleRecipeClick(recipe);
+        }
+      });
+    }
   });
 
    favoriteButtons.forEach(button => {
@@ -636,14 +703,121 @@ function handleCuisineFilter(cuisineValue) {
   showNotification(`Found ${filteredRecipes.length} ${cuisineValue === 'all' ? '' : cuisineValue} recipes`, 'success');
 }
 
-    //Buat Mas Danar
- function handleRecipeClick(recipe) {
-  console.log('Recipe clicked:', recipe.name);
-  
-   showNotification(`Recipe "${recipe.name}" selected.`, 'info');
-  //Tambahin sini
-  
+function handleServingsFilter(rangeValue) {
+  let filtered = [];
+  if (rangeValue === 'all') {
+    filtered = allRecipes;
+  } else {
+    filtered = allRecipes.filter(r => {
+      const s = r.servings;
+      if (rangeValue === '1-2') return s >= 1 && s <= 2;
+      if (rangeValue === '3-4') return s >= 3 && s <= 4;
+      if (rangeValue === '5-6') return s >= 5 && s <= 6;
+      if (rangeValue === '7+') return s >= 7;
+    });
+  }
+  displayedRecipes = filtered;
+  renderRecipes(displayedRecipes);
+  const recipesSection = document.querySelector('.featured-section');
+  recipesSection.scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => {
+    recipeCards = document.querySelectorAll('.recipe-card');
+    favoriteButtons = document.querySelectorAll('.btn-favorite');
+    setupRecipeListeners();
+    loadFavorites();
+    initializeAnimations();
+  }, 100);
+  showNotification(`Found ${filtered.length} recipes for servings ${rangeValue}`, 'success');
 }
+
+   // Modal utilities for Full Recipe (lazy-loaded from card.html)
+ let rbModalLoaded = false;
+ let rbModal, rbModalTitle, rbModalBody, rbCloseBtn;
+
+ async function ensureRecipeModal() {
+  if (rbModalLoaded) return;
+  const res = await fetch('card.html');
+  const html = await res.text();
+  const container = document.createElement('div');
+  container.innerHTML = html;
+  document.body.appendChild(container);
+  rbModal = document.getElementById('rbRecipeModal');
+  rbModalTitle = document.getElementById('rbModalTitle');
+  rbModalBody = document.getElementById('rbModalBody');
+  rbCloseBtn = document.getElementById('rbCloseBtn');
+  rbCloseBtn.addEventListener('click', closeRecipeModal);
+  rbModal.addEventListener('click', (e) => {
+    if (e.target.hasAttribute('data-rb-close')) closeRecipeModal();
+  });
+  rbModalLoaded = true;
+ }
+
+ function openRecipeModal() {
+  rbModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('rb-no-scroll');
+ }
+
+ function closeRecipeModal() {
+  rbModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('rb-no-scroll');
+ }
+
+ //Buat Mas Danar
+ async function handleRecipeClick(recipe) {
+  await ensureRecipeModal();
+  rbModalTitle.textContent = recipe.name;
+
+  const rating = recipe.rating || 4.5;
+  let stars = '';
+  for (let i = 0; i < 5; i++) {
+    stars += i < Math.round(rating) ? '★' : '☆';
+  }
+
+  let tagsHtml = '';
+  const tagsArr = recipe.tags || [];
+  for (let i = 0; i < tagsArr.length; i++) {
+    tagsHtml += `<span class="rb-tag">${tagsArr[i]}</span>`;
+  }
+
+  let ingHtml = '';
+  const ings = recipe.ingredients || [];
+  for (let i = 0; i < ings.length; i++) {
+    ingHtml += `<li>${ings[i]}</li>`;
+  }
+
+  let stepHtml = '';
+  const steps = recipe.instructions || [];
+  for (let i = 0; i < steps.length; i++) {
+    stepHtml += `<li>${steps[i]}</li>`;
+  }
+
+  rbModalBody.innerHTML = `
+    <div class="rb-top">
+      <img src="${recipe.image}" alt="${recipe.name}" class="rb-cover" />
+      <div>
+        <div class="rb-stats">
+          <div class="rb-stat"><span>PREP TIME</span><strong>${recipe.prepTimeMinutes} mins</strong></div>
+          <div class="rb-stat"><span>COOK TIME</span><strong>${recipe.cookTimeMinutes} mins</strong></div>
+          <div class="rb-stat"><span>SERVINGS</span><strong>${recipe.servings}</strong></div>
+          <div class="rb-stat"><span>DIFFICULTY</span><strong>${recipe.difficulty}</strong></div>
+          <div class="rb-stat"><span>CUISINE</span><strong>${recipe.cuisine}</strong></div>
+          <div class="rb-stat"><span>CALORIES</span><strong>${recipe.caloriesPerServing} cal/serving</strong></div>
+        </div>
+        <div class="rb-rating"><span class="rb-stars">${stars}</span><span> (${rating.toFixed(1)})</span></div>
+        <div class="rb-tags">${tagsHtml}</div>
+      </div>
+    </div>
+    <section class="rb-section">
+      <h3>Ingredients</h3>
+      <ul class="rb-ingredients">${ingHtml}</ul>
+    </section>
+    <section class="rb-section">
+      <h3>Instructions</h3>
+      <ol class="rb-instructions">${stepHtml}</ol>
+    </section>
+  `;
+  openRecipeModal();
+ }
 
  function handleFavoriteClick(button, recipe) {
   const heartPath = button.querySelector('svg path');

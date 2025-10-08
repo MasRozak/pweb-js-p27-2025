@@ -1,0 +1,45 @@
+<!-- Reusable Recipe Modal Template -->
+<style>
+  .rb-no-scroll { overflow: hidden; }
+  .rb-modal { position: fixed; inset: 0; display: none; z-index: 1000; }
+  .rb-modal[aria-hidden="false"] { display: block; }
+  .rb-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+  .rb-dialog { position: relative; max-width: 960px; width: calc(100% - 24px); margin: 40px auto; background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); display: flex; flex-direction: column; max-height: calc(100vh - 80px); }
+  .rb-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; flex: 0 0 auto; }
+  .rb-header h2 { margin: 0; font-size: 20px; }
+  .rb-close { background: transparent; border: none; font-size: 20px; cursor: pointer; }
+  .rb-body { padding: 20px; overflow: auto; flex: 1 1 auto; }
+  .rb-top { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .rb-cover { width: 100%; height: auto; max-height: 320px; object-fit: cover; border-radius: 12px; }
+  .rb-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .rb-stat { background: #f6f7f9; border: 1px solid #eee; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+  .rb-stat span { font-size: 11px; color: #666; }
+  .rb-stat strong { font-size: 14px; color: #111; }
+  .rb-rating { margin-top: 10px; color: #444; display: flex; gap: 8px; align-items: center; }
+  .rb-stars { color: #f5b301; letter-spacing: 1px; }
+  .rb-tags { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .rb-tag { background: #111; color: #fff; border-radius: 999px; padding: 4px 10px; font-size: 12px; }
+  .rb-section { margin-top: 18px; }
+  .rb-section h3 { margin: 0 0 10px 0; }
+  .rb-ingredients { list-style: disc; padding-left: 18px; color: #444; }
+  .rb-instructions { padding-left: 18px; color: #444; }
+  .rb-instructions li { margin-bottom: 8px; }
+  @media (max-width: 800px) {
+    .rb-dialog { margin: 16px auto; max-height: calc(100vh - 32px); }
+    .rb-top { grid-template-columns: 1fr; }
+    .rb-cover { max-height: 220px; }
+  }
+</style>
+
+<div id="rbRecipeModal" class="rb-modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="rb-backdrop" data-rb-close></div>
+  <div class="rb-dialog" role="document">
+    <div class="rb-header">
+      <h2 id="rbModalTitle">Full Recipe</h2>
+      <button class="rb-close" id="rbCloseBtn" aria-label="Close">✕</button>
+    </div>
+    <div class="rb-body" id="rbModalBody"></div>
+  </div>
+ </div>
+
+
