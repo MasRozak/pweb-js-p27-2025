@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Book - Home</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M16 4L4 10v10c0 7.5 5.2 14.5 12 16 6.8-1.5 12-8.5 12-16V10L16 4z" fill="#FF6B6B"/>
+        </svg>
+        <span class="logo-text">RecipeBook</span>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+        <li><a href="#recipes" class="nav-link" data-section="recipes">Recipes</a></li>
+        <li><a href="#favorites" class="nav-link" data-section="favorites">Favorites</a></li>
+      </ul>
+      <div class="nav-actions">
+        <span class="user-welcome" id="user-welcome">Welcome!</span>
+        <button class="btn-logout" id="logout-btn">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="16,17 21,12 16,7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="btn-profile">
+          <div class="profile-avatar" id="profile-avatar">U</div>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="hero-container">
+      <div class="hero-content">
+        <h1 class="hero-title">Discover Delicious Recipes</h1>
+        <p class="hero-subtitle">Explore thousands of recipes from around the world and find your next favorite dish</p>
+        <div class="hero-search">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
+            <path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input type="text" placeholder="Search for recipes, ingredients..." class="search-input">
+          <button class="search-btn">Search</button>
+        </div>
+        <div class="hero-tags">
+          <span class="tag">Italian</span>
+          <span class="tag">Asian</span>
+          <span class="tag">Vegetarian</span>
+          <span class="tag">Desserts</span>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="https://cdn.dummyjson.com/recipe-images/1.webp" alt="Delicious Recipe" class="hero-food-image">
+      </div>
+    </div>
+  </section>
+
+      <section class="categories-section" id="categories">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Browse by Category</h2>
+      </div>
+      <div class="categories-grid">
+        <div class="category-card">
+          <div class="category-icon">
+            <img src="https://cdn.dummyjson.com/recipe-images/15.webp" alt="Breakfast" class="category-image">
+          </div>
+          <h3 class="category-name">Breakfast</h3>
+          <p class="category-count"></p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">
+            <img src="https://cdn.dummyjson.com/recipe-images/4.webp" alt="Lunch" class="category-image">
+          </div>
+          <h3 class="category-name">Lunch</h3>
+          <p class="category-count"></p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">
+            <img src="https://cdn.dummyjson.com/recipe-images/1.webp" alt="Dinner" class="category-image">
+          </div>
+          <h3 class="category-name">Dinner</h3>
+          <p class="category-count"></p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">
+            <img src="https://cdn.dummyjson.com/recipe-images/23.webp" alt="Desserts" class="category-image">
+          </div>
+          <h3 class="category-name">Desserts</h3>
+          <p class="category-count"></p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">
+            <img src="https://cdn.dummyjson.com/recipe-images/2.webp" alt="Vegetarian" class="category-image">
+          </div>
+          <h3 class="category-name">Vegetarian</h3>
+          <p class="category-count"></p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">
+            <img src="https://cdn.dummyjson.com/recipe-images/7.webp" alt="Snacks" class="category-image">
+          </div>
+          <h3 class="category-name">Snacks</h3>
+          <p class="category-count"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Recipes Section -->
+  <section class="featured-section" id="recipes">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Featured Recipes</h2>
+        <a href="#" class="view-all">View All →</a>
+      </div>
+      
+      <!-- Filter Dropdown -->
+      <div class="filter-section">
+        <div class="filter-group">
+          <label for="cuisine-filter" class="filter-label">Filter by Cuisine:</label>
+          <select id="cuisine-filter" class="cuisine-dropdown">
+            <option value="all">All Cuisines</option>
+            <option value="American">American</option>
+            <option value="Asian">Asian</option>
+            <option value="Italian">Italian</option>
+            <option value="Mexican">Mexican</option>
+            <option value="Mediterranean">Mediterranean</option>
+            <option value="Indian">Indian</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Thai">Thai</option>
+            <option value="French">French</option>
+            <option value="Greek">Greek</option>
+            <option value="Korean">Korean</option>
+            <option value="Pakistani">Pakistani</option>
+          </select>
+          <svg class="dropdown-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      
+      <div class="recipes-grid">
+        <div class="loading-placeholder">
+          <p>Loading delicious recipes...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="favorites-section" id="favorites" style="display: none;">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">My Favorite Recipes</h2>
+        <span class="favorites-count">0 recipes</span>
+      </div>
+      <div class="favorites-grid">
+      </div>
+      <div class="no-favorites" style="display: none;">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="35" stroke="#E0E0E0" stroke-width="2"/>
+          <path d="M40 60l-15-15c-4-4-4-10 0-14 4-4 10-4 14 0l1 1 1-1c4-4 10-4 14 0 4 4 4 10 0 14L40 60z" fill="#FFE5E5"/>
+        </svg>
+        <h3>No Favorites Yet</h3>
+        <p>Start adding recipes to your favorites by clicking the ❤️ button on recipe cards</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- All Recipes Section -->
+  <section class="all-recipes-section" id="all-recipes" style="display: none;">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">All Recipes</h2>
+        <span class="total-recipes-count">0 recipes</span>
+      </div>
+      
+      <!-- Filter Dropdown for All Recipes -->
+      <div class="filter-section">
+        <div class="filter-group">
+          <label for="all-cuisine-filter" class="filter-label">Filter by Cuisine:</label>
+          <select id="all-cuisine-filter" class="cuisine-dropdown">
+            <option value="all">All Cuisines</option>
+            <option value="American">American</option>
+            <option value="Asian">Asian</option>
+            <option value="Italian">Italian</option>
+            <option value="Mexican">Mexican</option>
+            <option value="Mediterranean">Mediterranean</option>
+            <option value="Indian">Indian</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Thai">Thai</option>
+            <option value="French">French</option>
+            <option value="Greek">Greek</option>
+            <option value="Korean">Korean</option>
+            <option value="Pakistani">Pakistani</option>
+          </select>
+          <svg class="dropdown-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      
+      <div class="all-recipes-grid">
+        <div class="loading-placeholder">
+          <p>Loading all recipes...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="footer-logo">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <path d="M16 4L4 10v10c0 7.5 5.2 14.5 12 16 6.8-1.5 12-8.5 12-16V10L16 4z" fill="#FF6B6B"/>
+            </svg>
+            <span class="logo-text">RecipeBook</span>
+          </div>
+          <p class="footer-description">Discover and share amazing recipes from around the world</p>
+        </div>
+       
+      </div>
+    </div>
+  </footer>
+
+  <script src="home.js"></script>
+</body>
+</html>

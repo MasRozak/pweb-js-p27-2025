@@ -41,7 +41,7 @@ form.addEventListener("submit", async (event) => {
     message.textContent = "Login berhasil! Mengarahkan ke halaman resep...";
 
     setTimeout(() => {
-      window.location.href = "recipes.html";
+      window.location.href = "home.html";
     }, 1500);
 
   } catch (error) {
