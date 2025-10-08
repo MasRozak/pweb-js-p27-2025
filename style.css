@@ -1,4 +1,3 @@
-/* Reset dasar */
 * {
   box-sizing: border-box;
   font-family: 'Inter', sans-serif;
@@ -13,7 +12,6 @@ body {
   align-items: center;
 }
 
-/* Card Login */
 .login-card {
   background: #fff;
   width: 320px;
@@ -34,7 +32,6 @@ body {
   margin-bottom: 25px;
 }
 
-/* Input dan Label */
 label {
   display: block;
   text-align: left;
@@ -59,7 +56,6 @@ input:focus {
   border-color: #111;
 }
 
-/* Tombol */
 button {
   width: 100%;
   padding: 10px;
@@ -75,9 +71,9 @@ button:hover {
   background-color: #333;
 }
 
-/* Pesan */
 #message {
   margin-top: 10px;
   font-size: 13px;
   color: #444;
 }
+
